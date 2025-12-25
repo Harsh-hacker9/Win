@@ -1,0 +1,13 @@
+services:
+- type: web
+  name: 92lottery
+  env: node
+  region: frankfurt  # Choose region closest to your users
+  buildCommand: npm install
+  startCommand: npm run start:prod
+  envVars:
+  - key: NODE_VERSION
+    value: 18  # Or your preferred Node version
+  - key: PORT
+    value: 10000  # Render will provide the actual port, but this sets an upper limit
+  healthCheckPath: /

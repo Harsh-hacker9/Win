@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html translate="no" data-dpr="1" style="font-size: 48.16px">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport" />
+  <title>Lottery</title>
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css">
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-thin.css">
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-solid.css">
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-regular.css">
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-light.css">
+  <link href="/css/wallet/main.css" rel="stylesheet" />
+  <link href="/css/wallet/chunk_2-1.css" rel="stylesheet" />
+  <link href="/css/wallet/chunk_2-2.css" rel="stylesheet" />
+  <link href="/css/wallet/chunk_2-3.css" rel="stylesheet" />
+  <!-- <link rel="shortcut icon" href="/images/bitbug_favicon.ico" type="image/x-icon" /> -->
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      background-color: #090909;
+      padding: 0;
+      margin: 0;
+    }
+
+    .mian[data-v-439e6f58] {
+      background-color: #292929
+    }
+
+    .mian .banner[data-v-439e6f58] {
+      position: relative
+    }
+
+    .mian .banner .img[data-v-439e6f58] {
+      height: 4.53333rem;
+      width: 100%
+    }
+
+    .mian .banner .com[data-v-439e6f58] {
+      position: absolute;
+      top: 50%;
+      right: .53333rem;
+      z-index: 888;
+      transform: translateY(-65%)
+    }
+
+    .mian .banner .com .logo[data-v-439e6f58] {
+      width: 3.2rem;
+      height: 1.06667rem
+    }
+
+    .mian .banner .com .number[data-v-439e6f58],
+    .mian .banner .com .txt[data-v-439e6f58] {
+      font-size: .42667rem;
+      font-weight: 600;
+      color: #fff
+    }
+
+    .mian .banner .com .number[data-v-439e6f58] {
+      height: .8rem;
+      line-height: .8rem;
+      text-align: center;
+      border: .02667rem solid #eee
+    }
+
+    .mian .list[data-v-439e6f58] {
+      padding: .4rem
+    }
+
+    .mian .list .item[data-v-439e6f58] {
+      height: 1.33333rem;
+      background: #fff;
+      box-shadow: 0 .08rem .50667rem .10667rem #f0f1f3;
+      border-radius: .24rem;
+      margin-bottom: .53333rem;
+      font-size: .42667rem;
+      padding: 0 .4rem
+    }
+
+    #tableget {
+      margin: 0.26667rem 0.4rem 0;
+      background: #3f3f3f;
+      color: #fff;
+      box-shadow: 0 0.13333rem 0.29333rem 0.02667rem rgba(0, 0, 0, .12);
+      border-radius: 0.10667rem;
+      border: 1px solid #f3c300;
+    }
+
+    #tableget th,
+    #tableget td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    #tableget th {
+      background-color: #C4933F;
+      color: #F3C300;
+      font-weight: bold;
+    }
+
+    /*#tableget tr:nth-child(even) {
+          background-color: #f2f2f2;
+        }*/
+
+    #tableget tr:hover {
+      background-color: #ccc;
+    }
+
+    .card-item {
+      background-color: #333;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px;
+      color: lightgrey;
+    }
+
+    .status-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .status-title {
+      font-size: 18px;
+      width: 100%;
+      text-align: center;
+      color: rgb(193, 88, 44);
+      background-color: rgba(253, 215, 48, 0.911);
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+
+    .info-label {
+      font-size: 16px;
+      font-weight: bolder;
+      color: rgb(163, 160, 160);
+    }
+
+    .info-value {
+      font-size: 16px;
+      font-weight: bolder;
+      color: white;
+    }
+  </style>
+</head>
+
+<body style="font-size: 12px">
+  <div id="app">
+    <div data-v-439e6f58="" class="mian">
+      <div data-v-106b99c8="" data-v-439e6f58="" class="navbar">
+        <div data-v-106b99c8="" class="navbar-left" onclick="location.href='/mian'">
+          <div data-v-106b99c8="" class="bank c-row c-row-middle-center">
+            <i class="fa-light fa-angle-left fa-fade fa-xl center" style="color: #FFF"></i>
+          </div>
+        </div>
+        <div data-v-106b99c8="" class="navbar-title">Transaction History</div>
+        <div data-v-106b99c8="" class="navbar-right">
+          <div data-v-11ffe290="" data-v-106b99c8="" class="c-row">
+            <i class="fa-fade fa center" style="color: #FFF">
+              <img data-v-11ffe290="" data-v-106b99c8="" src="/images/audio.webp"
+                style="width:.66667rem;height:.66667rem">
+            </i>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body" id="cardContainer">
+          <!-- Cards will be dynamically added here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script src="/plugins/jquery/jquery.min.js"></script>
+  <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/dist/js/adminlte.min.js"></script>
+  <script src="/js/admin/admin.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+  <script>
+
+
+    $.ajax({
+      type: "GET",
+      url: "/getrecord",
+      dataType: "json",
+      success: function (response) {
+        // Update the table with the new data
+        updateTable(response);
+
+      },
+      error: function (xhr, status, error) {
+        console.log('Error fetching data:', error);
+
+      }
+    });
+
+    // Function to update the table with new data
+    function updateTable(data) {
+      if (Array.isArray(data.rows) && data.rows.length > 0) {
+        var cardContainer = $('#cardContainer');
+        cardContainer.empty();
+
+        data.rows.forEach(function (item) {
+          var displayType = (item.type === "Referral Bonus") ? item.type : item.type + " salary";
+          var card = `
+                <div class="card-item">
+                    <div class="status-container">
+                        <div class="status-header">
+                            <div class="status-title">Bonus</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Phone</div>
+                            <div class="info-value" style="color: rgba(253, 215, 48, 0.911);">${item.phone}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Amount</div>
+                            <div class="info-value" style="color: rgb(107, 190, 88);">₹ ${item.amount}.00</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Type</div>
+                            <div class="info-value">${displayType}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Time</div>
+                            <div class="info-value">${item.time}</div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            `;
+          cardContainer.append(card);
+        });
+      } else {
+        console.log('No data found or invalid response format');
+      }
+    }
+
+
+
+
+
+  </script>
+</body>
+
+</html>

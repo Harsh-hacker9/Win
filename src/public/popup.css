@@ -1,0 +1,161 @@
+.popup {
+    width: 35%;
+    top: 5%;
+    max-width: 320px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    /* position: relative; */
+}
+
+.popup.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-header {
+    background-color: #FF6666;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+.popup-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.popup-header p {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+}
+
+.popup-content {
+    padding: 15px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.deposit-option {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px 0;
+}
+
+.deposit-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.deposit-header strong {
+    color: #FF6666;
+}
+
+.bonus {
+    color: #FF9900;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    position: relative;
+    width: 70%;
+    height: 20px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-right: 10px;
+    overflow: hidden;
+}
+
+.progress-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #666;
+    z-index: 1;
+}
+
+.progress {
+    width: 0;
+    height: 100%;
+    background-color: #FF6666;
+    border-radius: 5px;
+    z-index: 0;
+}
+
+.deposit-button {
+    background-color: #FF6666;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.deposit-button:hover {
+    background-color: #ff5050;
+}
+
+.popup-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.reminder-button {
+    background-color: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+}
+
+.activity-button {
+    background-color: #FF6666;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.activity-button:hover {
+    background-color: #ff5050;
+}
+
+.close-button {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #d1cbcb;
+}
+
+.close-button:hover {
+    color: #fff8f8;
+}
+
+@media (max-width: 620px) {
+    .popup {
+        width: 65%;
+    }
+}
