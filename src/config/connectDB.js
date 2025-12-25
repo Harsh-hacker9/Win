@@ -7,16 +7,25 @@ const connection = {
     async execute(queryPath, params = null) {
         try {
             // Check if this looks like a SQL query
-            if (typeof queryPath === 'string' && (queryPath.toUpperCase().includes('SELECT') || queryPath.toUpperCase().includes('FROM'))) {
-                // Parse simple SQL queries like 'SELECT `field` FROM table'
-                const sqlMatch = queryPath.match(/SELECT\s+`?([^`\s,]+)`?\s+FROM\s+(\w+)/i);
+            if (typeof queryPath === 'string' && (queryPath.toUpperCase().includes('SELECT') && queryPath.toUpperCase().includes('FROM'))) {
+                // Handle string literals like SELECT 'app' FROM admin
+                const literalMatch = queryPath.match(/SELECT\s+'([^']+)'\s+FROM\s+(\w+)/i);
+                if (literalMatch) {
+                    const [, literalValue, table] = literalMatch;
+                    // Just return the literal value in the expected format
+                    return [[{ [literalValue]: literalValue }], null];
+                }
+                            
+                // Parse simple SQL queries like 'SELECT field FROM table' or 'SELECT `field` FROM table'
+                // Handle both 'SELECT `field` FROM table' and 'SELECT field FROM table'
+                const sqlMatch = queryPath.match(/SELECT\s+`?([^`\s,']+)`?\s+FROM\s+(\w+)/i);
                 if (sqlMatch) {
                     const [, field, table] = sqlMatch;
                     const response = await axios.get(`${databaseUrl}/${table}.json`);
-                    
+                                
                     if (response.data !== null && response.data !== undefined) {
                         let data = response.data;
-                        
+                                    
                         if (Array.isArray(data)) {
                             // If it's already an array, return with the requested field
                             return [data.map(item => ({ [field]: item[field] })), null];
@@ -74,7 +83,7 @@ const connection = {
     async query(sqlQuery, params = null) {
         try {
             // For SQL queries, pass to execute function
-            if (typeof sqlQuery === 'string' && (sqlQuery.toUpperCase().includes('SELECT') || sqlQuery.toUpperCase().includes('FROM'))) {
+            if (typeof sqlQuery === 'string' && (sqlQuery.toUpperCase().includes('SELECT') && sqlQuery.toUpperCase().includes('FROM'))) {
                 return await this.execute(sqlQuery, params);
             }
             
