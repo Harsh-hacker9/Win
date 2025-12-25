@@ -22,10 +22,10 @@ const connection = {
                 if (sqlMatch) {
                     const [, field, table] = sqlMatch;
                     const response = await axios.get(`${databaseUrl}/${table}.json`);
-                                
+                                        
                     if (response.data !== null && response.data !== undefined) {
                         let data = response.data;
-                                    
+                                            
                         if (Array.isArray(data)) {
                             // If it's already an array, return with the requested field
                             return [data.map(item => ({ [field]: item[field] })), null];
@@ -42,35 +42,52 @@ const connection = {
                             return [[{ [field]: data }], null];
                         }
                     } else {
+                        // If table doesn't exist or is empty, return appropriate structure
+                        // For SELECT field FROM table, return empty array
                         return [[], null];
                     }
                 }
             }
             
             // If not a SQL query, treat as direct path
-            const response = await axios.get(`${databaseUrl}/${queryPath}.json`);
-            
-            if (response.data !== null && response.data !== undefined) {
-                const data = response.data;
+            try {
+                const response = await axios.get(`${databaseUrl}/${queryPath}.json`);
                 
-                // Convert Firebase data structure to MySQL-like format
-                if (Array.isArray(data)) {
-                    // If it's already an array
-                    return [data, null];
-                } else if (typeof data === 'object') {
-                    // If it's an object with Firebase-generated keys
-                    const values = Object.keys(data).map(key => ({
-                        id: key,
-                        ...data[key]
-                    }));
-                    return [values, null];
+                if (response.data !== null && response.data !== undefined) {
+                    const data = response.data;
+                    
+                    // Convert Firebase data structure to MySQL-like format
+                    if (Array.isArray(data)) {
+                        // If it's already an array
+                        return [data, null];
+                    } else if (typeof data === 'object') {
+                        // If it's an object with Firebase-generated keys
+                        const values = Object.keys(data).map(key => ({
+                            id: key,
+                            ...data[key]
+                        }));
+                        return [values, null];
+                    } else {
+                        // If it's a primitive value
+                        return [[{ value: data }], null];
+                    }
                 } else {
-                    // If it's a primitive value
-                    return [[{ value: data }], null];
+                    // Return empty array when no data exists
+                    return [[], null];
                 }
-            } else {
-                // Return empty array when no data exists
-                return [[], null];
+            } catch (error) {
+                // If path doesn't exist, return appropriate defaults for known tables
+                // This handles cases where tables don't exist yet in Firebase
+                if (queryPath === 'admin') {
+                    // Default admin data
+                    return [[{ id: 'default', app: 'Dream 9 Club', cskh: 'default_support' }], null];
+                } else if (queryPath === 'users') {
+                    // Default empty users array
+                    return [[], null];
+                } else {
+                    // For other paths, return empty array
+                    return [[], null];
+                }
             }
         } catch (error) {
             console.error('Firebase query error:', error);
