@@ -5,17 +5,27 @@ const middlewareController = async(req, res, next) => {
     const auth = req.cookies.auth;
     if (!auth) return res.redirect("/login");
     try {
-        const [rows] = await connection.execute('SELECT `token`, `status` FROM `users` WHERE `token` = ? AND `veri` = 1', [auth]);
-        if(!rows) {
+        // Query Firebase for user with matching token
+        const [users] = await connection.execute('users');
+        
+        // Find user with matching token and verified status
+        let user = null;
+        if (users && users.length > 0) {
+            user = users.find(u => u.token === auth && u.veri === 1);
+        }
+        
+        if (!user) {
             res.clearCookie("auth");
             return res.end();
         };
-        if (auth == rows[0].token && rows[0].status == '1') {
+        
+        if (auth === user.token && user.status == '1') {
             next();
         } else {
             return res.redirect("/login");
         }
     } catch (error) {
+        console.error('Middleware error:', error);
         return res.redirect("/login");
     }
 }

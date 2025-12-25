@@ -4,6 +4,8 @@ import md5 from "md5";
 import request from 'request';
 import e from "express";
 import dotenv from 'dotenv';
+import { ref, get, set, update, query, orderByChild, equalTo, push } from 'firebase/database';
+import { database } from '../config/firebaseConfig.js';
 dotenv.config();
 
 let timeNow = Date.now();
@@ -70,15 +72,27 @@ const login = async (req, res) => {
     }
 
     try {
-        const [rows] = await connection.query('SELECT * FROM users WHERE phone = ? AND password = ? ', [username, md5(pwd)]);
-        if (rows.length == 1) {
-            if (rows[0].status == 1) {
-                const { password, money, ip, veri, ip_address, status, time, ...others } = rows[0];
+        // Query Firebase for user with matching phone and password
+        const [allUsers] = await connection.execute('users');
+        
+        // Find user with matching phone number
+        let user = null;
+        if (allUsers && allUsers.length > 0) {
+            user = allUsers.find(u => u.phone === username && u.password === md5(pwd));
+        }
+        
+        if (user) {
+            if (user.status == 1) {
+                const { password, money, ip, veri, ip_address, status, time, ...others } = user;
                 const accessToken = jwt.sign({
                     user: { ...others },
                     timeNow: timeNow
                 }, process.env.JWT_ACCESS_TOKEN, { expiresIn: "1d" });
-                await connection.execute('UPDATE `users` SET `token` = ? WHERE `phone` = ? ', [md5(accessToken), username]);
+                
+                // Update user's token in Firebase
+                const userRef = ref(database, `users/${user.id || user.phone}`); // Use id or phone as key
+                await update(userRef, { token: md5(accessToken) });
+                
                 return res.status(200).json({
                     message: 'Login Successfully!',
                     status: true,
@@ -98,6 +112,7 @@ const login = async (req, res) => {
             });
         }
     } catch (error) {
+        console.error('Login error:', error);
         if (error) console.log(error);
     }
 
@@ -128,9 +143,26 @@ const register = async (req, res) => {
     }
 
     try {
-        const [check_u] = await connection.query('SELECT * FROM users WHERE phone = ?', [username]);
-        const [check_i] = await connection.query('SELECT * FROM users WHERE code = ? ', [invitecode]);
-        const [check_ip] = await connection.query('SELECT * FROM users WHERE ip_address = ? ', [ip]);
+        // Query Firebase for existing users
+        const [allUsers] = await connection.execute('users');
+        
+        // Find user with matching phone
+        let check_u = [];
+        if (allUsers && allUsers.length > 0) {
+            check_u = allUsers.filter(u => u.phone === username);
+        }
+        
+        // Find user with matching invite code
+        let check_i = [];
+        if (allUsers && allUsers.length > 0) {
+            check_i = allUsers.filter(u => u.code === invitecode);
+        }
+        
+        // Find user with matching IP
+        let check_ip = [];
+        if (allUsers && allUsers.length > 0) {
+            check_ip = allUsers.filter(u => u.ip_address === ip);
+        }
 
         if (check_u.length == 1 && check_u[0].veri == 1) {
             return res.status(200).json({
@@ -146,24 +178,58 @@ const register = async (req, res) => {
                 } else {
                     ctv = check_i[0].ctv;
                 }
-                const sql = "INSERT INTO users SET id_user = ?,phone = ?,name_user = ?,password = ?, plain_password = ?, money = ?,code = ?,invite = ?,ctv = ?,veri = ?,otp = ?,ip_address = ?,status = ?,time = ?, free_bonus = ?, first_deposit = ?";
-                await connection.execute(sql, [id_user, username, name_user, md5(pwd), pwd, 0, code, invitecode, ctv, 1, otp2, ip, 1, time, 500, 0]);
-                await connection.execute('INSERT INTO point_list SET phone = ?', [username]);
+                
+                // Create new user object
+                const newUser = {
+                    id_user,
+                    phone: username,
+                    name_user,
+                    password: md5(pwd),
+                    plain_password: pwd,
+                    money: 0,
+                    code,
+                    invite: invitecode,
+                    ctv,
+                    veri: 1,
+                    otp: otp2,
+                    ip_address: ip,
+                    status: 1,
+                    time,
+                    free_bonus: 500,
+                    first_deposit: 0
+                };
+                
+                // Add user to Firebase
+                const usersRef = ref(database, 'users');
+                await push(usersRef, newUser);
+                
+                // Add to point_list
+                const pointListRef = ref(database, 'point_list');
+                await push(pointListRef, { phone: username });
 
-                let [check_code] = await connection.query('SELECT * FROM users WHERE invite = ? ', [invitecode]);
-
-                if (check_i.name_user !== 'Admin') {
+                // Query users again to get updated list
+                const [allUsersUpdated] = await connection.execute('users');
+                
+                // Update referrer's level if needed
+                if (check_i[0].name_user !== 'Admin') {
                     let levels = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44];
-
+                    
+                    // Find users with matching invite code
+                    const check_code = allUsersUpdated.filter(u => u.invite === invitecode);
+                    
                     for (let i = 0; i < levels.length; i++) {
                         if (check_code.length >= levels[i]) {
-                            await connection.execute('UPDATE users SET user_level = ? WHERE code = ?', [i + 1, invitecode]);
+                            // Find and update the referrer's user level
+                            const referrerUser = allUsersUpdated.find(u => u.code === invitecode);
+                            if (referrerUser) {
+                                const referrerRef = ref(database, `users/${referrerUser.id || referrerUser.phone}`);
+                                await update(referrerRef, { user_level: i + 1 });
+                            }
                         } else {
                             break;
                         }
                     }
                 }
-
 
                 return res.status(200).json({
                     message: "Registered successfully",
@@ -184,6 +250,7 @@ const register = async (req, res) => {
             }
         }
     } catch (error) {
+        console.error('Registration error:', error);
         if (error) console.log(error);
     }
 
