@@ -8,28 +8,32 @@ const connection = {
         try {
             const response = await axios.get(`${databaseUrl}/${queryPath}.json`);
             
-            if (response.data !== null) {
+            if (response.data !== null && response.data !== undefined) {
                 const data = response.data;
                 
                 // Convert Firebase data structure to MySQL-like format
-                if (typeof data === 'object' && data !== null) {
-                    // If it's an object with keys, convert to array format similar to MySQL results
-                    if (Object.keys(data).some(key => !isNaN(key))) {
-                        return [Object.values(data), null];
-                    } else {
-                        // If it's a single object
-                        return [[data], null];
-                    }
+                if (Array.isArray(data)) {
+                    // If it's already an array
+                    return [data, null];
+                } else if (typeof data === 'object') {
+                    // If it's an object with Firebase-generated keys
+                    const values = Object.keys(data).map(key => ({
+                        id: key,
+                        ...data[key]
+                    }));
+                    return [values, null];
                 } else {
                     // If it's a primitive value
                     return [[{ value: data }], null];
                 }
             } else {
+                // Return empty array when no data exists
                 return [[], null];
             }
         } catch (error) {
             console.error('Firebase query error:', error);
-            throw error;
+            // Return empty array in case of error to match MySQL behavior
+            return [[], null];
         }
     },
     
