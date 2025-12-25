@@ -1,14 +1,17 @@
 import admin from 'firebase-admin';
 
 // Initialize the Firebase Admin SDK
-// For server-side applications, we can initialize with database URL only
-// This is simpler and doesn't require a service account for basic operations
+// Using only database URL without credentials for public access
 
-// Check if already initialized to prevent multiple initializations
-if (admin.apps.length === 0) {
-  admin.initializeApp({
-    databaseURL: "https://bdgwin-9b9da-default-rtdb.firebaseio.com"
-  });
+try {
+  // Check if already initialized to prevent multiple initializations
+  if (admin.apps.length === 0) {
+    admin.initializeApp({
+      databaseURL: "https://bdgwin-9b9da-default-rtdb.firebaseio.com"
+    });
+  }
+} catch (error) {
+  console.error('Firebase initialization error:', error);
 }
 
 const database = admin.database();
