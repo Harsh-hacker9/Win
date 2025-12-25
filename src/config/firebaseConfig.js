@@ -1,17 +1,24 @@
-// For server-side usage with public Firebase Realtime Database
-import { initializeApp } from 'firebase/app';
-import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
+import admin from 'firebase-admin';
 
-// Firebase configuration
-const firebaseConfig = {
-  databaseURL: "https://bdgwin-9b9da-default-rtdb.firebaseio.com"
-};
+// For server-side usage with Firebase
+// Initialize Firebase Admin SDK with only database URL, without credentials for public access
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+let database;
 
-// In production, the database will connect to the URL specified in firebaseConfig
-// Make sure your Firebase Realtime Database rules allow the operations your app needs
+try {
+  // Check if already initialized to prevent multiple initializations
+  if (admin.apps.length === 0) {
+    // Initialize without credentials for public database access
+    admin.initializeApp({
+      databaseURL: "https://bdgwin-9b9da-default-rtdb.firebaseio.com"
+    });
+  }
+  
+  // Get the default database instance
+  database = admin.database();
+} catch (error) {
+  console.error('Firebase initialization error:', error);
+  throw error;
+}
 
 export { database };
