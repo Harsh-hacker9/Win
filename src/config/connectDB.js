@@ -1,16 +1,15 @@
-import { database } from './firebaseConfig.js';
-import { ref, get, set, update, remove } from 'firebase/database';
+import axios from 'axios';
+import { databaseUrl } from './firebaseConfig.js';
 
-// Create a connection object that mimics the MySQL pool interface but uses Firebase
+// Create a connection object that mimics the MySQL pool interface but uses Firebase REST API
 const connection = {
     // Function to get data from Firebase
     async execute(queryPath, params = null) {
         try {
-            const dbRef = ref(database, queryPath);
-            const snapshot = await get(dbRef);
+            const response = await axios.get(`${databaseUrl}/${queryPath}.json`);
             
-            if (snapshot.exists()) {
-                const data = snapshot.val();
+            if (response.data !== null) {
+                const data = response.data;
                 
                 // Convert Firebase data structure to MySQL-like format
                 if (typeof data === 'object' && data !== null) {
@@ -39,8 +38,7 @@ const connection = {
         try {
             if (params && params.length > 0) {
                 // This is an update/insert operation
-                const dbRef = ref(database, queryPath);
-                await set(dbRef, params[0]); // Assuming params[0] contains the data
+                await axios.put(`${databaseUrl}/${queryPath}.json`, params[0]);
                 return [true, null];
             } else {
                 // This is a select operation
@@ -55,8 +53,7 @@ const connection = {
     // Additional utility functions
     async insertData(path, data) {
         try {
-            const dbRef = ref(database, path);
-            await set(dbRef, data);
+            await axios.put(`${databaseUrl}/${path}.json`, data);
             return true;
         } catch (error) {
             console.error('Firebase insert error:', error);
@@ -66,8 +63,7 @@ const connection = {
     
     async updateData(path, data) {
         try {
-            const dbRef = ref(database, path);
-            await update(dbRef, data);
+            await axios.patch(`${databaseUrl}/${path}.json`, data);
             return true;
         } catch (error) {
             console.error('Firebase update error:', error);
@@ -77,8 +73,7 @@ const connection = {
     
     async deleteData(path) {
         try {
-            const dbRef = ref(database, path);
-            await remove(dbRef);
+            await axios.delete(`${databaseUrl}/${path}.json`);
             return true;
         } catch (error) {
             console.error('Firebase delete error:', error);
