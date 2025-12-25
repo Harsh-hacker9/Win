@@ -1,7 +1,6 @@
 // For server-side usage with public Firebase Realtime Database
-// We'll use the client-side Firebase SDK with minimal configuration
 import { initializeApp } from 'firebase/app';
-import { getDatabase } from 'firebase/database';
+import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -11,5 +10,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+
+// In production, the database will connect to the URL specified in firebaseConfig
+// Make sure your Firebase Realtime Database rules allow the operations your app needs
 
 export { database };
