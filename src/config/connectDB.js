@@ -1,13 +1,11 @@
 import { database } from './firebaseConfig.js';
-import { ref, get, set, update, remove, query, orderByChild, equalTo } from 'firebase/database';
 
 // Create a connection object that mimics the MySQL pool interface but uses Firebase
 const connection = {
     // Function to get data from Firebase
     async execute(queryPath, params = null) {
         try {
-            const dbRef = ref(database, queryPath);
-            const snapshot = await get(dbRef);
+            const snapshot = await database.ref(queryPath).once('value');
             
             if (snapshot.exists()) {
                 const data = snapshot.val();
@@ -39,8 +37,7 @@ const connection = {
         try {
             if (params && params.length > 0) {
                 // This is an update/insert operation
-                const dbRef = ref(database, queryPath);
-                await set(dbRef, params[0]); // Assuming params[0] contains the data
+                await database.ref(queryPath).set(params[0]); // Assuming params[0] contains the data
                 return [true, null];
             } else {
                 // This is a select operation
@@ -55,8 +52,7 @@ const connection = {
     // Additional utility functions
     async insertData(path, data) {
         try {
-            const dbRef = ref(database, path);
-            await set(dbRef, data);
+            await database.ref(path).set(data);
             return true;
         } catch (error) {
             console.error('Firebase insert error:', error);
@@ -66,8 +62,7 @@ const connection = {
     
     async updateData(path, data) {
         try {
-            const dbRef = ref(database, path);
-            await update(dbRef, data);
+            await database.ref(path).update(data);
             return true;
         } catch (error) {
             console.error('Firebase update error:', error);
@@ -77,8 +72,7 @@ const connection = {
     
     async deleteData(path) {
         try {
-            const dbRef = ref(database, path);
-            await remove(dbRef);
+            await database.ref(path).remove();
             return true;
         } catch (error) {
             console.error('Firebase delete error:', error);

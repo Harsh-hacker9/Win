@@ -1,20 +1,30 @@
-import { initializeApp } from 'firebase/app';
-import { getDatabase } from 'firebase/database';
+import admin from 'firebase-admin';
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBNyWveM_EzQmWQ4Cid1q6JUM4BQR7Fv6M",
-  authDomain: "bdgwin-9b9da.firebaseapp.com",
-  databaseURL: "https://bdgwin-9b9da-default-rtdb.firebaseio.com",
-  projectId: "bdgwin-9b9da",
-  storageBucket: "bdgwin-9b9da.firebasestorage.app",
-  messagingSenderId: "599664410972",
-  appId: "1:599664410972:web:c10512b38964b8d582c199",
-  measurementId: "G-C3TQNP9M4W"
-};
+// Initialize the Firebase Admin SDK
+// For server-side applications, we typically use a service account key
+// If you don't have a service account, you can initialize with database URL
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+// Check if already initialized to prevent multiple initializations
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.cert({
+      "type": "service_account",
+      "project_id": "bdgwin-9b9da",
+      "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+      "private_key": process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+      "client_id": process.env.FIREBASE_CLIENT_ID,
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-11234%40bdgwin-9b9da.iam.gserviceaccount.com"
+    }),
+    databaseURL: "https://bdgwin-9b9da-default-rtdb.firebaseio.com"
+  });
+} else {
+  admin.app();
+}
+
+const database = admin.database();
 
 export { database };

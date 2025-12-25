@@ -4,8 +4,6 @@ import md5 from "md5";
 import request from 'request';
 import e from "express";
 import dotenv from 'dotenv';
-import { ref, get, set, update, query, orderByChild, equalTo, push } from 'firebase/database';
-import { database } from '../config/firebaseConfig.js';
 dotenv.config();
 
 let timeNow = Date.now();
@@ -90,8 +88,7 @@ const login = async (req, res) => {
                 }, process.env.JWT_ACCESS_TOKEN, { expiresIn: "1d" });
                 
                 // Update user's token in Firebase
-                const userRef = ref(database, `users/${user.id || user.phone}`); // Use id or phone as key
-                await update(userRef, { token: md5(accessToken) });
+                await connection.updateData(`users/${user.id || user.phone}`, { token: md5(accessToken) });
                 
                 return res.status(200).json({
                     message: 'Login Successfully!',
@@ -200,12 +197,10 @@ const register = async (req, res) => {
                 };
                 
                 // Add user to Firebase
-                const usersRef = ref(database, 'users');
-                await push(usersRef, newUser);
+                await connection.insertData('users', newUser);
                 
                 // Add to point_list
-                const pointListRef = ref(database, 'point_list');
-                await push(pointListRef, { phone: username });
+                await connection.insertData('point_list', { phone: username });
 
                 // Query users again to get updated list
                 const [allUsersUpdated] = await connection.execute('users');
@@ -222,8 +217,7 @@ const register = async (req, res) => {
                             // Find and update the referrer's user level
                             const referrerUser = allUsersUpdated.find(u => u.code === invitecode);
                             if (referrerUser) {
-                                const referrerRef = ref(database, `users/${referrerUser.id || referrerUser.phone}`);
-                                await update(referrerRef, { user_level: i + 1 });
+                                await connection.updateData(`users/${referrerUser.id || referrerUser.phone}`, { user_level: i + 1 });
                             }
                         } else {
                             break;

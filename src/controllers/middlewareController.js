@@ -11,7 +11,12 @@ const middlewareController = async(req, res, next) => {
         // Find user with matching token and verified status
         let user = null;
         if (users && users.length > 0) {
-            user = users.find(u => u.token === auth && u.veri === 1);
+            // Convert object to array if it's an object with Firebase keys
+            let usersArray = users;
+            if (Array.isArray(users) === false && typeof users === 'object') {
+                usersArray = Object.values(users);
+            }
+            user = usersArray.find(u => u.token === auth && u.veri === 1);
         }
         
         if (!user) {
