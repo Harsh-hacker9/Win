@@ -55,6 +55,7 @@ Thumbs.db
 pm2/logs/
 
 # Sensitive files
-config/
+config/*.env
+config/.env*
 secrets/
 credentials.json
